@@ -26,6 +26,8 @@ function main() {
   generateLanguageIndex()
   console.log('Generating index.category.m3u...')
   generateCategoryIndex()
+  console.log('Generating index.full.m3u...')
+  generateFullIndex()
   console.log('Generating /countries...')
   generateCountries()
   console.log('Generating /categories...')
@@ -207,5 +209,16 @@ function generateLanguages() {
     }
   }
 }
+function generateFullIndex() {
+  const filename = `${ROOT_DIR}/index.full.m3u`
+  helper.createFile(filename, '#EXTM3U\n')
 
+  const channels = helper.sortBy(list.all, ['countryName', 'group', 'title', 'url'])
+  for(let channel of channels) {
+    const group = channel.group
+    channel.group = [ channel.countryName, channel.group ].filter(i => i).join(';')
+    helper.appendToFile(filename, channel.toString())
+    channel.group = group
+  }
+}
 main()
